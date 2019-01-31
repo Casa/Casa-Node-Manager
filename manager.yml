@@ -1,0 +1,38 @@
+version: '2.4'
+
+services:
+  manager:
+    container_name: manager
+    hostname: manager
+    restart: always
+    image: casanode${REPOSITORY_ADDENDUM}/manager:${TAG}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - /usr/local/bin/docker-compose:/usr/local/bin/docker-compose
+      - /usr/local/casa/applications:/usr/local/casa/applications
+      - applications_accounts:/accounts
+      - settings:/settings
+    ports:
+      - "3000:3000"
+    environment:
+      - CASABUILDER_PASSWORD
+      - CASAWORKER_PASSWORD
+      - DISABLE_YML_UPDATE
+      - SYSTEM_USER
+      - TAG
+    networks:
+      - manager
+    labels:
+      - casa=persist
+    mem_limit: 256m
+    memswap_limit: -1 # unlimited access to device swap
+    oom_kill_disable: true
+
+networks:
+  manager:
+
+volumes:
+  settings:
+  applications_accounts:
+    external: true
