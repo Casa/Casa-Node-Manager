@@ -1,0 +1,1 @@
+{"bitcoind":{"bitcoinNetwork":"mainnet","bitcoindListen":true,"rpcUser":"17e52b61-8070-4177-9d99-4ab03219a81b","rpcPassword":"9c34cc42-bd52-4430-a477-144eddc4b4aa"},"lnd":{"chain":"bitcoin","backend":"bitcoind","lndNetwork":"mainnet","autopilot":false,"externalIP":""}}
