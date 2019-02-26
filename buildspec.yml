@@ -28,6 +28,10 @@ phases:
       - git clone https://$GITHUB_USER:$GITHUB_PASS@github.com/Casa/home-compute-warehouse --depth 1 /warehouse
       - rsync -av --exclude=update-manager.yml /warehouse/lightning-node/*.yml ./resources
 
+      # Copy the launch file
+      - git clone -b pi-precompiled-software --single-branch https://$GITHUB_USER:$GITHUB_PASS@github.com/Casa/home-compute-install-tools --depth 1 /tools
+      - rsync -av /tools/launch.sh ./resources
+
       - echo Installing source NPM dependencies...
       - npm install
   build:
@@ -83,7 +87,7 @@ phases:
           docker push $ORGANIZATION/$REPOSITORY:$ARCH
 
           echo "pushing master branch to legacy docker hub"
-          docker tag casacomputer/$REPOSITORY:$ARCH $ORGANIZATION/$REPOSITORY:$ARCH
+          docker tag $ORGANIZATION/$REPOSITORY:$ARCH casacomputer/$REPOSITORY:$ARCH
           docker push casacomputer/$REPOSITORY:$ARCH
         elif [ "$releaseBranchText" = "release" ] && [ "$PUBLIC" = "false" ]; then
           echo "pushing release branch to docker hub"

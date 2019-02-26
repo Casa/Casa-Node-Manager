@@ -44,5 +44,7 @@ module.exports = {
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || './resources/jwt.key',
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || './resources/jwt.pem',
   NODE_LOG_ARCHIVE_GPG_RECIPIENT: 'node-logs@team.casa',
-  DOCKER_ORGANIZATION: 'casanode'
+  DOCKER_ORGANIZATION: 'casanode',
+  LAUNCH_SCRIPT: 'launch.sh',
+  LAUNCH_DIRECTORY: '/usr/local/casa',
 };
