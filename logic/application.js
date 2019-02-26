@@ -285,6 +285,7 @@ async function startup() {
   do {
     try {
       await settingsFileIntegrityCheck();
+      await checkAndUpdateLaunchScript();
 
       // initial setup after a reset or manufacture, force an update.
       const firstBoot = await auth.isRegistered();
@@ -351,8 +352,8 @@ async function startSpaceFleet() {
   await dockerComposeLogic.dockerComposeUpSingleService({service: 'space-fleet'});
 }
 
-// Removes the bitcoind chain and resync it from Casa's server.
-async function resyncChainFromServer(full) {
+// Removes the bitcoind chain if full is true and optionally resync it from Casa's aws server.
+async function resyncChain(full, syncFromAWS) {
 
   try {
     resetSystemStatus();
@@ -376,34 +377,36 @@ async function resyncChainFromServer(full) {
       // TODO do we really need to wipe index and chainstate?
     }
 
-    let attempt = 0;
-    let failed = false;
-    do {
-      attempt++;
+    if (syncFromAWS) {
+      let attempt = 0;
+      let failed = false;
+      do {
+        attempt++;
 
-      systemStatus.details = 'trying attempt ' + attempt + '...';
-      await downloadChain();
-      failed = await getResyncFailed();
+        systemStatus.details = 'trying attempt ' + attempt + '...';
+        await downloadChain();
+        failed = await getResyncFailed();
 
-      // removing download container to erase logs from previous attempts
-      await dockerComposeLogic.dockerComposeRemove({service: constants.SERVICES.DOWNLOAD});
+        // removing download container to erase logs from previous attempts
+        await dockerComposeLogic.dockerComposeRemove({service: constants.SERVICES.DOWNLOAD});
 
-    } while (failed && attempt <= MAX_RESYNC_ATTEMPTS);
+      } while (failed && attempt <= MAX_RESYNC_ATTEMPTS);
+    }
 
-    systemStatus.details = 'removing download image...';
+    systemStatus.details = 'removing excess images...';
     await dockerLogic.pruneImages();
 
-    systemStatus.details = 'starting lnd...';
-    await dockerComposeLogic.dockerComposeUp({service: constants.SERVICES.LND});
     systemStatus.details = 'starting bitcoind...';
-    await dockerComposeLogic.dockerComposeUp({service: constants.SERVICES.BITCOIND});
+    await dockerComposeLogic.dockerComposeUpSingleService({service: constants.SERVICES.BITCOIND});
+    systemStatus.details = 'starting lnd...';
+    await dockerComposeLogic.dockerComposeUpSingleService({service: constants.SERVICES.LND});
 
     resetSystemStatus();
   } catch (error) {
     systemStatus.error = true;
     systemStatus.details = 'see logs for more details...';
 
-    // TODO what to do with lnd and bitcoind?
+    // TODO what to do with lnd and bitcoind in the event of an error?
   }
 }
 
@@ -616,6 +619,25 @@ async function updateYMLs(outdatedYMLs) {
   }
 }
 
+async function checkAndUpdateLaunchScript() { // eslint-disable-line id-length
+  try {
+    systemStatus.updating = true;
+    const canonicalMd5 = md5Check.sync(constants.CANONICAL_YML_DIRECTORY.concat('/' + constants.LAUNCH_SCRIPT));
+    const ondeviceMd5 = md5Check.sync(constants.LAUNCH_DIRECTORY.concat('/' + constants.LAUNCH_SCRIPT));
+
+    // TODO: tell space-fleet to tell the user to restart their device.
+    if (canonicalMd5 !== ondeviceMd5) {
+      const launchScriptFile = constants.CANONICAL_YML_DIRECTORY + '/' + constants.LAUNCH_SCRIPT;
+      await bashService.exec('cp', [launchScriptFile, constants.LAUNCH_DIRECTORY], {});
+    }
+    systemStatus.error = false;
+  } catch (error) {
+    systemStatus.error = true;
+  } finally {
+    systemStatus.updating = false;
+  }
+}
+
 module.exports = {
   downloadLogs,
   deleteLogArchives,
@@ -626,7 +648,7 @@ module.exports = {
   shutdown,
   startup,
   reset,
-  resyncChainFromServer,
+  resyncChain,
   userReset,
   update,
 };
