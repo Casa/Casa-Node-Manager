@@ -1,0 +1,10 @@
+{
+    "network":"updated-mainnet",
+    "bitcoindListen":"true",
+    "bitcoindPort":"8333",
+    "nickName":5,
+    "autopilot":"false",
+    "maxChannels":"ten",
+    "maxChanSize":"one-hundred",
+    "externalIP":100
+ }

@@ -3,12 +3,14 @@
 const UUID = require('utils/UUID');
 
 module.exports = {
+  CASA_NODE_HIDDEN_SERVICE_FILE: '/var/lib/tor/casa-node/hostname',
   COMPOSE_FILES: {
     DEVICE_HOST: 'device-host.yml',
     DOWNLOAD: 'download.yml',
     LIGHTNING_NODE: 'lightning-node.yml',
     LOGSPOUT: 'logspout.yml',
     MANAGER: 'manager.yml',
+    TOR: 'tor.yml',
     WELCOME: 'welcome.yml'
   },
   WORKING_DIRECTORY: '/usr/local/casa/applications',
@@ -30,13 +32,18 @@ module.exports = {
     PAPERTRAIL: 'papertrail',
     SPACE_FLEET: 'space-fleet',
     SYSLOG: 'syslog',
+    TOR: 'tor',
     UPDATE_MANAGER: 'update-manager',
     WELCOME: 'welcome'
   },
   TAG: process.env.TAG || 'arm',
   TIME: {
-    ONE_HOUR_IN_MILLIS: 1 * 60 * 60 * 1000,
+    FIVE_MINUTES_IN_MILLIS: 5 * 60 * 1000,
+    ONE_DAY_IN_MILLIS: 24 * 60 * 60 * 10001000,
+    ONE_SECOND_IN_MILLIS: 1000,
+    ONE_HOUR_IN_MILLIS: 60 * 60 * 1000,
     NINETY_MINUTES_IN_MILLIS: 90 * 60 * 1000,
+    HOURS_IN_TWO_DAYS: 47,
   },
   LOGGING_SERVICES: ['syslog', 'papertrail', 'logspout'],
   USER_PASSWORD_FILE: process.env.USER_PASSWORD_FILE || '/accounts/user.json',

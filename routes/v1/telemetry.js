@@ -5,6 +5,11 @@ const dockerLogic = require('logic/docker.js');
 const auth = require('middlewares/auth.js');
 const safeHandler = require('utils/safeHandler');
 
+router.get('/addresses', safeHandler((req, res) =>
+  applicationLogic.getAddresses()
+    .then(addresses => res.json(addresses))
+));
+
 router.get('/version', auth.jwt, safeHandler((req, res) =>
   applicationLogic.getFilteredVersions()
     .then(versions => res.json(versions))

@@ -14,6 +14,8 @@ services:
       - /usr/local/casa:/usr/local/casa
       - applications_accounts:/accounts
       - settings:/settings
+      - tor-cookie:/root/.tor/:ro # remove this volume after lnd can use tor passwords
+      - tor-hidden-services:/var/lib/tor/
     ports:
       - "3000:3000"
     environment:
@@ -23,18 +25,16 @@ services:
       - DISABLE_YML_UPDATE
       - SYSTEM_USER
       - TAG
-    networks:
-      - manager
+    network_mode: host
     labels:
       - casa=persist
     mem_limit: 256m
     memswap_limit: -1 # unlimited access to device swap
     oom_kill_disable: true
 
-networks:
-  manager:
-
 volumes:
   settings:
   applications_accounts:
     external: true
+  tor-cookie: # remove this volume after lnd can use tor passwords
+  tor-hidden-services:

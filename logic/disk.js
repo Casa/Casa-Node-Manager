@@ -24,6 +24,16 @@ function settingsFileExists() {
     .catch(() => Promise.resolve(false));
 }
 
+function hiddenServiceFileExists() {
+  return readHiddenService()
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
+function readHiddenService() {
+  return diskService.readFile(constants.CASA_NODE_HIDDEN_SERVICE_FILE);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -46,6 +56,8 @@ module.exports = {
   writeSettingsFile,
   writeUserFile,
   settingsFileExists,
+  hiddenServiceFileExists,
+  readHiddenService,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
