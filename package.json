@@ -6,9 +6,11 @@
   "scripts": {
     "lint": "eslint",
     "start": "node ./bin/www",
-    "test": "mocha --file test.setup 'test/**/*.js'"
+    "test": "mocha --file test.setup 'test/**/*.js'",
+    "coverage": "nyc --all mocha --file test.setup 'test/**/*.js'"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^3.0.1",
     "body-parser": "^1.18.2",
     "child_process": "^1.0.2",
@@ -41,6 +43,20 @@
     "chai-http": "^4.2.0",
     "eslint": "^5.3.0",
     "mocha": "^5.2.0",
+    "nyc": "^13.2.0",
     "sinon": "^6.1.4"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "test.setup.js",
+      "coverage/lcov-report/*"
+    ],
+    "sourceMap": false,
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "cache": "false"
   }
 }

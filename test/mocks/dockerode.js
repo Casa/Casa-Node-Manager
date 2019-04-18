@@ -408,8 +408,13 @@ function listImagesWithUpdate() {
       VirtualSize: 14637419 } ];
 }
 
+function df() {
+  return require('./dockerode-df.json');
+}
+
 module.exports = {
   listAllContainers,
   listImages,
   listImagesWithUpdate,
+  df
 };

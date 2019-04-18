@@ -90,17 +90,57 @@ function getStatuses() {
   return deferred.promise;
 }
 
-function getServiceFromImage(image) {
+// We need to parse image name from the docker image on the device. Generally, there is only one
+// image on device and one service that corresponds to that image. However, when we have downloaded the latest
+// image onto the device, there then exists two images for a given service. One corresponding to the container and
+// one corresponding to the newly downloaded image. Because of this, container['Image'] is turned into a
+// sha256 hash by docker. In those instances, we need to use the service for lookup.
+function getServiceFromImage(image, defaultName) {
   const slashIndex = image.indexOf('/');
   const semiIndex = image.indexOf(':');
   const service = image.substr(slashIndex + 1, semiIndex - slashIndex - 1);
 
-  // if we are only able to find a sha, return undefined
+  // If we are only able to find a sha, return the default.
   if (service !== 'sha256') {
     return service;
   } else {
-    return undefined;
+    return defaultName;
   }
+}
+
+// Do we have an image for the given service on device.
+async function hasImageForService(service) {
+  const images = await dockerService.getImages();
+
+  for (const image of images) {
+    // RepoTags is a nullable array. We have to null check and then loop over each tag.
+    if (image.RepoTags) {
+      for (const tag of image.RepoTags) {
+        // example tag 'casanode/manager:arm'
+        if (tag.split('/')[1].split(':')[0] === service) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+// Returns true if the given service is currently running.
+async function isRunningService(service) {
+  const containers = await getAllContainers();
+
+  for (const container of containers) {
+    const dockerComposeService = container['Labels']['com.docker.compose.service'];
+    const containerImage = container['Image'];
+
+    if (getServiceFromImage(containerImage, dockerComposeService) === service) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // Get the version and updatable status of each running container.
@@ -128,12 +168,7 @@ async function getVersions() {
     const containerVersion = container['ImageID'];
     const containerImage = container['Image'];
 
-    // We need to use regex to get the image name from the docker image on the device. Generally, there is only one
-    // image on device and one service that corresponds to that image. However, when we have downloaded the latest
-    // image onto the device, there then exists two images for a given service. One corresponding to the container and
-    // one corresponding to the newly downloaded image. Because of this, container['Image'] is turned into a
-    // sha256 hash by docker. In those instances, we need to use the service for lookup.
-    const lookupService = getServiceFromImage(containerImage) || service;
+    const lookupService = getServiceFromImage(containerImage, service);
 
     // During migration from `casacomputer` to `casanode` we cannot always retrieve the correct image. Filter for only
     // casanode* images.
@@ -234,6 +269,8 @@ module.exports = {
   getVersions,
   getVolumeUsage,
   getLogs,
+  hasImageForService,
+  isRunningService,
   stopNonPersistentContainers, // eslint-disable-line id-length
   pruneContainers,
   pruneNetworks,

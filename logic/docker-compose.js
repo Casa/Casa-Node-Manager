@@ -50,6 +50,8 @@ function composeFile(options) {
     return WORKING_DIR + '/' + constants.COMPOSE_FILES.LOGSPOUT;
   } else if (options.service === constants.SERVICES.MANAGER) {
     return WORKING_DIR + '/' + constants.COMPOSE_FILES.MANAGER;
+  } else if (options.service === constants.SERVICES.TOR) {
+    return WORKING_DIR + '/' + constants.COMPOSE_FILES.TOR;
   } else if (options.service === constants.SERVICES.WELCOME) {
     return WORKING_DIR + '/' + constants.COMPOSE_FILES.WELCOME;
   } else {
@@ -62,6 +64,12 @@ function addDefaultOptions(options) {
   options.log = true;
   options.env = options.env || {};
   options.env.TAG = constants.TAG;
+  options.env.DEVICE_HOST = process.env.DEVICE_HOST;
+
+  // Add Casa Node Hidden Service if available.
+  if (process.env.CASA_NODE_HIDDEN_SERVICE) {
+    options.env.CASA_NODE_HIDDEN_SERVICE = process.env.CASA_NODE_HIDDEN_SERVICE;
+  }
 }
 
 async function dockerComposeUp(options) {
@@ -117,8 +125,8 @@ function dockerComposePull(options = {}) {
 async function dockerComposePullAll() {
   const casabuilderImagesToPull = [constants.SERVICES.MANAGER];
   const casaworkerImagesToPull = [constants.SERVICES.DEVICE_HOST, constants.SERVICES.LND, constants.SERVICES.BITCOIND,
-    constants.SERVICES.LNAPI, constants.SERVICES.SPACE_FLEET, constants.SERVICES.SYSLOG, constants.SERVICES.LOGSPOUT,
-    constants.SERVICES.WELCOME];
+    constants.SERVICES.LNAPI, constants.SERVICES.SPACE_FLEET, constants.SERVICES.SYSLOG, constants.SERVICES.TOR,
+    constants.SERVICES.LOGSPOUT, constants.SERVICES.WELCOME];
 
   // Pull images synchronously. Async pull will take too much processing power. We don't want these pulls to overload
   // the raspberry pi.
@@ -135,6 +143,7 @@ async function dockerComposePullAll() {
   await dockerLogout();
 }
 
+// Stop a docker container.
 function dockerComposeStop(options = {}) {
   var deferred = q.defer();
 
@@ -159,6 +168,7 @@ function dockerComposeStop(options = {}) {
   return deferred.promise;
 }
 
+// Remove a stopped docker container.
 function dockerComposeRemove(options = {}) {
   var deferred = q.defer();
 
@@ -167,6 +177,31 @@ function dockerComposeRemove(options = {}) {
   addDefaultOptions(options);
 
   var composeOptions = ['-f', file, 'rm', '-f', service];
+
+  function handleSuccess() {
+    deferred.resolve();
+  }
+
+  function handleError(error) {
+    deferred.reject(error);
+  }
+
+  bashService.exec(DOCKER_COMPOSE_COMMAND, composeOptions, options)
+    .then(handleSuccess)
+    .catch(handleError);
+
+  return deferred.promise;
+}
+
+// Restart a docker container.
+function dockerComposeRestart(options = {}) {
+  var deferred = q.defer();
+
+  const file = composeFile(options);
+  const service = options.service;
+  addDefaultOptions(options);
+
+  var composeOptions = ['-f', file, 'restart', '-t', DOCKER_TIMEOUT_SECONDS, service];
 
   function handleSuccess() {
     deferred.resolve();
@@ -268,7 +303,7 @@ module.exports = {
   dockerComposePullAll,
   dockerComposeStop,
   dockerComposeRemove,
+  dockerComposeRestart,
   dockerComposeUpSingleService, // eslint-disable-line id-length
   dockerLoginCasaworker,
-  dockerLogout,
 };

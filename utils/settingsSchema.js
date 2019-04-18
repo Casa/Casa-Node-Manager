@@ -20,8 +20,15 @@ const bitcoindSchema = {
   properties: {
     bitcoinNetwork: {$ref: '/networks'},
     bitcoindListen: {type: 'boolean'},
+    bitcoindPort: {
+      type: 'integer',
+      minimum: 0,
+      maximum: 65535,
+    },
     rpcPassword: {type: 'string'},
     rpcUser: {type: 'string'},
+    bitcoindTor: {type: 'boolean'},
+    torOnly: {type: 'boolean'},
   },
   required: ['bitcoinNetwork', 'bitcoindListen'],
   additionalProperties: false
@@ -50,6 +57,7 @@ const lndSchema = {
     externalIP: {
       type: 'string'
     },
+    lndTor: {type: 'boolean'},
   },
   oneOf: [
     {
@@ -90,8 +98,15 @@ const sparseBitcoindSchema = {
   properties: {
     bitcoinNetwork: {$ref: '/networks'},
     bitcoindListen: {type: 'boolean'},
+    bitcoindPort: {
+      type: 'integer',
+      minimum: 0,
+      maximum: 65535,
+    },
     rpcPassword: {type: 'string'},
     rpcUser: {type: 'string'},
+    bitcoindTor: {type: 'boolean'},
+    torOnly: {type: 'boolean'},
   },
   required: [],
   additionalProperties: false
@@ -110,6 +125,7 @@ const sparseLndSchema = {
     maxChannels: {
       type: 'integer',
       minimum: 0,
+      maximum: 40,
     },
     maxChanSize: {
       type: 'integer',
@@ -118,6 +134,7 @@ const sparseLndSchema = {
     externalIP: {
       type: 'string'
     },
+    lndTor: {type: 'boolean'},
   },
   required: [],
   additionalProperties: false

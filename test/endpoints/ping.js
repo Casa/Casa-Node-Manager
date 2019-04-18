@@ -1,3 +1,5 @@
+/* eslint-disable no-magic-numbers */
+/* eslint-env mocha */
 /* globals requester */
 
 describe('ping', () => {

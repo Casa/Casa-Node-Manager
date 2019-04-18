@@ -17,6 +17,9 @@ router.post('/save', auth.jwt, safeHandler((req, res, next) => {
     bitcoind: {
       bitcoinNetwork: req.body.network,
       bitcoindListen: req.body.bitcoindListen, // eslint-disable-line object-shorthand
+      bitcoindPort: req.body.bitcoindPort,
+      bitcoindTor: req.body.bitcoindTor,
+      torOnly: req.body.bitcoindTorOnly,
     },
     lnd: {
       lndNodeAlias: req.body.nickName,
@@ -25,6 +28,7 @@ router.post('/save', auth.jwt, safeHandler((req, res, next) => {
       maxChannels: req.body.maxChannels,
       maxChanSize: req.body.maxChanSize,
       externalIP: req.body.externalIP,
+      lndTor: req.body.lndTor,
     }
   };
 
@@ -34,8 +38,12 @@ router.post('/save', auth.jwt, safeHandler((req, res, next) => {
   }
 
   return applicationLogic.saveSettings(settings)
-    .then(() => res.json())
-    .catch(() => next(new LNNodeError('Unable to save settings')));
+    .then(() => {
+      res.json();
+    })
+    .catch((error) => { // eslint-disable-line arrow-parens
+      next(new LNNodeError('Unable to save settings. ' + error.message));
+    });
 }));
 
 router.get('/read', auth.jwt, safeHandler((req, res, next) =>

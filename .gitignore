@@ -12,3 +12,6 @@ lb_settings.json
 jwt.key*
 jwt.pem*
 resources/*.yml
+.nyc_output
+coverage
+jsconfig.json

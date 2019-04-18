@@ -73,7 +73,6 @@ function basic(req, res, next) {
         if (err) {
           return next(new NodeError('Unable to authenticate', 401)); // eslint-disable-line no-magic-numbers
         }
-        delete user.password;
 
         return next(null, user);
       });
