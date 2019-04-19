@@ -435,17 +435,20 @@ async function startup() {
         }
       }
 
-      // // TODO: remove before release, this prevents the manager from overriding local changes to YMLs.
+      // TODO: remove before release, this prevents the manager from overriding local changes to YMLs.
       if (process.env.DISABLE_YML_UPDATE !== 'true') {
         await checkYMLs();
       }
 
-      // previous releases will have a paused Welcome service, let us be good stewarts.
+      // Previous releases will have a paused Welcome service, let us be good stewarts.
       await dockerComposeLogic.dockerComposeStop({service: constants.SERVICES.WELCOME});
       await dockerComposeLogic.dockerComposeRemove({service: constants.SERVICES.WELCOME});
 
-      // clean up old images
+      // Clean up old images.
       await dockerLogic.pruneImages();
+
+      // Ensure tor volumes are created before launching applications.
+      await dockerLogic.ensureTorVolumes();
 
       // Spin up applications
       await startTorAsNeeded(settings);

@@ -3,6 +3,20 @@ var docker = new Docker();
 
 var q = require('q'); // eslint-disable-line id-length
 
+async function createVolume(name) {
+  var deferred = q.defer();
+
+  docker.createVolume({name: name}, function(err, containers) { // eslint-disable-line object-shorthand
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(containers);
+    }
+  });
+
+  return deferred.promise;
+}
+
 function getContainers(all) {
   var deferred = q.defer();
 
@@ -174,6 +188,7 @@ function removeVolume(name) {
 }
 
 module.exports = {
+  createVolume,
   getContainers,
   getDiskUsage,
   getContainerLogs,

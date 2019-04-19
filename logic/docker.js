@@ -8,6 +8,13 @@ const constants = require('utils/const.js');
 
 const q = require('q'); // eslint-disable-line id-length
 
+async function ensureTorVolumes() {
+
+  // Create tor volumes. This ensures they are created the very first time the manager runs.
+  await dockerService.createVolume('applications_tor-cookie');
+  await dockerService.createVolume('applications_tor-hidden-services');
+}
+
 function getAllContainers() {
   return dockerService.getContainers(true);
 }
@@ -56,6 +63,9 @@ function getStatuses() {
     containers.forEach(function(container) {
       // TODO: Filter out problematic welcome service, need to fix properly by shutting it down.
       if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.WELCOME) {
+        return;
+      }
+      if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.DEVICE_HOST) {
         return;
       }
       statuses.push({
@@ -264,6 +274,7 @@ async function removeVolume(name) {
 }
 
 module.exports = {
+  ensureTorVolumes,
   getImages,
   getStatuses,
   getVersions,
