@@ -99,6 +99,52 @@ describe('v1/telemetry endpoints', () => {
         });
     });
 
+    it('should handle junk images', done => {
+
+      clock = sinon.useFakeTimers({
+        now: 1546416000000, // January 2, 2019 Midnight PST
+        shouldAdvanceTime: false,
+      });
+
+      const images = dockerodeMocks.listImages();
+      images.push(dockerodeMocks.getAlpineImage());
+
+      dockerodeListAllContainers = sinon.stub(require('dockerode').prototype, 'listContainers')
+        .yields(null, dockerodeMocks.listAllContainers());
+      dockerodeListImages = sinon.stub(require('dockerode').prototype, 'listImages')
+        .yields(null, images);
+
+      requester
+        .get('/v1/telemetry/version')
+        .set('authorization', `JWT ${token}`)
+        .end((err, res) => {
+          if (err) {
+            done(err);
+          }
+          res.should.have.status(200);
+          res.should.be.json;
+
+          res.body.should.have.property('lnd');
+          res.body['lnd'].updatable.should.equal(false);
+          res.body.should.have.property('bitcoind');
+          res.body['bitcoind'].updatable.should.equal(false);
+          res.body.should.have.property('lnapi');
+          res.body['lnapi'].updatable.should.equal(false);
+          res.body.should.have.property('space-fleet');
+          res.body['space-fleet'].updatable.should.equal(false);
+          res.body.should.have.property('manager');
+          res.body['manager'].updatable.should.equal(false);
+          res.body.should.have.property('update-manager');
+          res.body['update-manager'].updatable.should.equal(false);
+          res.body.should.have.property('logspout');
+          res.body['logspout'].updatable.should.equal(false);
+          res.body.should.have.property('syslog');
+          res.body['syslog'].updatable.should.equal(false);
+
+          done();
+        });
+    });
+
     it('should have an updatable containers', done => {
 
       clock = sinon.useFakeTimers({

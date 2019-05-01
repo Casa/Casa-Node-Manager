@@ -6,5 +6,6 @@
     "autopilot":"false",
     "maxChannels":"ten",
     "maxChanSize":"one-hundred",
-    "externalIP":100
- }
+    "externalIP":100,
+    "systemDisplayUnits":"millisats"
+}
