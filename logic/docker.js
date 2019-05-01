@@ -127,7 +127,8 @@ async function hasImageForService(service) {
     if (image.RepoTags) {
       for (const tag of image.RepoTags) {
         // example tag 'casanode/manager:arm'
-        if (tag.split('/')[1].split(':')[0] === service) {
+        if (tag.includes('/') && tag.split('/')[1].split(':')[0] === service) {
+
           return true;
         }
       }
@@ -165,7 +166,10 @@ async function getVersions() {
     // RepoTags is a nullable array. We have to null check and then loop over each tag.
     if (image.RepoTags) {
       for (const tag of image.RepoTags) {
-        if (tag.split(':')[1] === constants.TAG && tag.split(':')[0].includes(constants.DOCKER_ORGANIZATION)) {
+        if (tag.includes('/')
+          && tag.split(':')[1] === constants.TAG
+          && tag.split(':')[0].includes(constants.DOCKER_ORGANIZATION)) {
+
           const service = getServiceFromImage(tag);
           imageDict[service] = image;
         }

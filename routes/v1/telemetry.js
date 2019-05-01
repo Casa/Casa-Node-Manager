@@ -10,6 +10,11 @@ router.get('/addresses', safeHandler((req, res) =>
     .then(addresses => res.json(addresses))
 ));
 
+router.get('/boot', safeHandler((req, res) =>
+  applicationLogic.getBootPercent()
+    .then(percent => res.json({percent: percent}))
+));
+
 router.get('/version', auth.jwt, safeHandler((req, res) =>
   applicationLogic.getFilteredVersions()
     .then(versions => res.json(versions))

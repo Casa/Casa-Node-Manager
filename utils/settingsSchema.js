@@ -4,14 +4,15 @@ const settingsSchema = {
   type: 'object',
   properties: {
     bitcoind: {$ref: '/bitcoind'},
-    lnd: {$ref: '/lnd'}
+    lnd: {$ref: '/lnd'},
+    system: {$ref: '/system'}
   },
   required: [
     'bitcoind',
     'lnd',
+    'system',
   ],
-  additionalProperties: false
-
+  additionalProperties: false,
 };
 
 const bitcoindSchema = {
@@ -31,7 +32,7 @@ const bitcoindSchema = {
     torOnly: {type: 'boolean'},
   },
   required: ['bitcoinNetwork', 'bitcoindListen'],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 const lndSchema = {
@@ -70,26 +71,44 @@ const lndSchema = {
     },
   ],
   required: ['backend', 'chain', 'lndNetwork', 'autopilot'],
-  additionalProperties: false
+  additionalProperties: false,
+};
+
+const systemSchema = {
+  id: '/system',
+  type: 'object',
+  properties: {
+    systemDisplayUnits: {$ref: '/displayUnits'},
+  },
+  required: [],
+  additionalProperties: false,
 };
 
 const availableNetworks = {
   id: '/networks',
   type: 'string',
-  enum: ['testnet', 'mainnet']
+  enum: ['testnet', 'mainnet'],
+};
+
+const availableUnits = {
+  id: '/displayUnits',
+  type: 'string',
+  enum: ['btc', 'sats'],
 };
 
 const sparseSettingsSchema = {
   type: 'object',
   properties: {
     bitcoind: {$ref: '/sparseBitcoind'},
-    lnd: {$ref: '/sparseLnd'}
+    lnd: {$ref: '/sparseLnd'},
+    system: {$ref: '/sparseSystem'},
   },
   required: [
     'bitcoind',
     'lnd',
+    'system',
   ],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 const sparseBitcoindSchema = {
@@ -109,7 +128,7 @@ const sparseBitcoindSchema = {
     torOnly: {type: 'boolean'},
   },
   required: [],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 const sparseLndSchema = {
@@ -137,7 +156,17 @@ const sparseLndSchema = {
     lndTor: {type: 'boolean'},
   },
   required: [],
-  additionalProperties: false
+  additionalProperties: false,
+};
+
+const sparseSystemSchema = {
+  id: '/sparseSystem',
+  type: 'object',
+  properties: {
+    systemDisplayUnits: {$ref: '/displayUnits'},
+  },
+  required: [],
+  additionalProperties: false,
 };
 
 function validateSettingsSchema(data) {
@@ -145,6 +174,8 @@ function validateSettingsSchema(data) {
   validator.addSchema(availableNetworks);
   validator.addSchema(lndSchema);
   validator.addSchema(bitcoindSchema);
+  validator.addSchema(availableUnits);
+  validator.addSchema(systemSchema);
 
   return validator.validate(data, settingsSchema);
 }
@@ -154,6 +185,8 @@ function validateSparseSettingsSchema(data) { // eslint-disable-line id-length
   validator.addSchema(availableNetworks);
   validator.addSchema(sparseLndSchema);
   validator.addSchema(sparseBitcoindSchema);
+  validator.addSchema(availableUnits);
+  validator.addSchema(sparseSystemSchema);
 
   return validator.validate(data, sparseSettingsSchema);
 }

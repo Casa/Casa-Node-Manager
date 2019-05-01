@@ -29,6 +29,9 @@ router.post('/save', auth.jwt, safeHandler((req, res, next) => {
       maxChanSize: req.body.maxChanSize,
       externalIP: req.body.externalIP,
       lndTor: req.body.lndTor,
+    },
+    system: {
+      systemDisplayUnits: req.body.systemDisplayUnits,
     }
   };
 

@@ -281,6 +281,20 @@ function listImages() {
       VirtualSize: 14637419 } ];
 }
 
+function getAlpineImage() {
+  return { Containers: -1,
+    Created: 1546225789,
+    Id: 'sha256:ade22b045b12205f32e725d9f597afbdc2f2959fc4f09099d01ce05e3948f204',
+    Labels: null,
+    ParentId: '',
+    RepoDigests:
+      [ 'alpine@sha256:28ef97b8686a0b5399129e9b763d5b7e5ff03576aa5580d6f4182a49c5fe1913' ],
+    RepoTags: [ 'alpine:latest' ],
+    SharedSize: -1,
+    Size: 1088628885,
+    VirtualSize: 1088628885 };
+}
+
 // Contains the base set of images, and updated images for the manager, and a few old images.
 function listImagesWithUpdate() {
   return [ { Containers: -1,
@@ -413,8 +427,9 @@ function df() {
 }
 
 module.exports = {
+  getAlpineImage,
   listAllContainers,
   listImages,
   listImagesWithUpdate,
-  df
+  df,
 };

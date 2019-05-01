@@ -341,6 +341,19 @@ describe('v1/settings endpoints', () => {
           externalIP.should.have.property('stack');
           externalIP.stack.should.equal('instance.lnd.externalIP is not of a type(s) string');
 
+          res.body[9].should.have.property('property');
+          res.body[9].property.should.be.equal('instance.system.systemDisplayUnits');
+          const systemDisplayUnits = res.body[9];
+          systemDisplayUnits.should.have.property('message');
+          systemDisplayUnits.message.should.equal('is not one of enum values: btc,sats');
+          systemDisplayUnits.should.have.property('schema');
+          systemDisplayUnits.schema.should.equal('/displayUnits');
+          systemDisplayUnits.should.have.property('instance');
+          systemDisplayUnits.instance.should.equal('millisats');
+          systemDisplayUnits.should.have.property('name');
+          systemDisplayUnits.name.should.equal('enum');
+          systemDisplayUnits.stack.should.equal('instance.system.systemDisplayUnits is not one of enum values: btc,sats');
+
           done();
         });
     });
