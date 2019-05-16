@@ -258,7 +258,7 @@ async function saveSettings(settings) {
       newConfig['system'][key] = systemSettings[key];
     }
   }
-  
+
   if (!Object.prototype.hasOwnProperty.call(newConfig['system'], 'systemDisplayUnits')) {
     newConfig['system']['systemDisplayUnits'] = 'btc';
   }
@@ -420,7 +420,8 @@ async function startup() {
       if (ipv4) {
         process.env.DEVICE_HOST = ipv4;
       } else {
-        throw new Error('No ipv4 address available. Plug in ethernet.');
+        // Add a log, but do not block the startup process.
+        logger.info('No ipv4 address available. Plug in ethernet.', 'startup');
       }
 
       // initial setup after a reset or manufacture, force an update.
