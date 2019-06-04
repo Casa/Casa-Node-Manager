@@ -120,6 +120,7 @@ describe('v1/settings endpoints', () => {
           res.body.bitcoind.bitcoindListen.should.equal(true);
           res.body.bitcoind.should.have.property('bitcoindPort');
           res.body.bitcoind.bitcoindPort.should.equal(8333);
+
           res.body.should.have.property('lnd');
           res.body.lnd.should.have.property('chain');
           res.body.lnd.chain.should.equal('bitcoin');
@@ -127,6 +128,10 @@ describe('v1/settings endpoints', () => {
           res.body.lnd.backend.should.equal('bitcoind');
           res.body.lnd.should.have.property('lndNetwork');
           res.body.lnd.lndNetwork.should.equal('mainnet');
+          res.body.lnd.should.have.property('color');
+          res.body.lnd.color.should.equal('#3399FF');
+          res.body.lnd.should.have.property('minChanSize');
+          res.body.lnd.minChanSize.should.equal(20000);
           res.body.lnd.should.have.property('autopilot');
           res.body.lnd.autopilot.should.equal(false);
           res.body.lnd.should.have.property('externalIP');
@@ -172,6 +177,8 @@ describe('v1/settings endpoints', () => {
 
           res.should.be.json;
           res.body.should.be.an('array');
+
+          console.log(res.body)
 
           res.body[0].should.have.property('property');
           res.body[0].property.should.be.equal('instance.bitcoind.bitcoinNetwork');
@@ -266,8 +273,44 @@ describe('v1/settings endpoints', () => {
           lndNodeAlias.stack.should.equal('instance.lnd.lndNodeAlias is not of a type(s) string');
 
           res.body[5].should.have.property('property');
-          res.body[5].property.should.be.equal('instance.lnd.autopilot');
-          const autopilot = res.body[5];
+          res.body[5].property.should.be.equal('instance.lnd.color');
+          const color = res.body[5];
+          color.should.have.property('message');
+          color.message.should.equal('does not meet minimum length of 7');
+          color.should.have.property('schema');
+          color.schema.should.have.property('type');
+          color.schema.type.should.equal('string');
+          color.schema.should.have.property('minLength');
+          color.schema.minLength.should.equal(7);
+          color.should.have.property('instance');
+          color.instance.should.equal('short');
+          color.should.have.property('name');
+          color.name.should.equal('minLength');
+          color.should.have.property('argument');
+          color.argument.should.be.an('number');
+          color.should.have.property('stack');
+          color.stack.should.equal('instance.lnd.color does not meet minimum length of 7');
+
+          res.body[6].should.have.property('property');
+          res.body[6].property.should.be.equal('instance.lnd.minChanSize');
+          const minChanSize = res.body[6];
+          minChanSize.should.have.property('message');
+          minChanSize.message.should.equal('must have a minimum value of 20000');
+          minChanSize.should.have.property('schema');
+          minChanSize.schema.should.have.property('type');
+          minChanSize.schema.type.should.equal('integer');
+          minChanSize.schema.should.have.property('minimum');
+          minChanSize.schema.minimum.should.equal(20000);
+          minChanSize.should.have.property('name');
+          minChanSize.name.should.equal('minimum');
+          minChanSize.should.have.property('argument');
+          color.argument.should.be.an('number');
+          minChanSize.should.have.property('stack');
+          minChanSize.stack.should.equal('instance.lnd.minChanSize must have a minimum value of 20000');
+
+          res.body[7].should.have.property('property');
+          res.body[7].property.should.be.equal('instance.lnd.autopilot');
+          const autopilot = res.body[7];
           autopilot.should.have.property('message');
           autopilot.message.should.equal('is not of a type(s) boolean');
           autopilot.should.have.property('schema');
@@ -283,9 +326,9 @@ describe('v1/settings endpoints', () => {
           autopilot.should.have.property('stack');
           autopilot.stack.should.equal('instance.lnd.autopilot is not of a type(s) boolean');
 
-          res.body[6].should.have.property('property');
-          res.body[6].property.should.be.equal('instance.lnd.maxChannels');
-          const maxChannels = res.body[6];
+          res.body[8].should.have.property('property');
+          res.body[8].property.should.be.equal('instance.lnd.maxChannels');
+          const maxChannels = res.body[8];
           maxChannels.should.have.property('message');
           maxChannels.message.should.equal('is not of a type(s) integer');
           maxChannels.should.have.property('schema');
@@ -303,9 +346,9 @@ describe('v1/settings endpoints', () => {
           maxChannels.should.have.property('stack');
           maxChannels.stack.should.equal('instance.lnd.maxChannels is not of a type(s) integer');
 
-          res.body[7].should.have.property('property');
-          res.body[7].property.should.be.equal('instance.lnd.maxChanSize');
-          const maxChanSize = res.body[7];
+          res.body[9].should.have.property('property');
+          res.body[9].property.should.be.equal('instance.lnd.maxChanSize');
+          const maxChanSize = res.body[9];
           maxChanSize.should.have.property('message');
           maxChanSize.message.should.equal('is not of a type(s) integer');
           maxChanSize.should.have.property('schema');
@@ -323,9 +366,9 @@ describe('v1/settings endpoints', () => {
           maxChanSize.should.have.property('stack');
           maxChanSize.stack.should.equal('instance.lnd.maxChanSize is not of a type(s) integer');
 
-          res.body[8].should.have.property('property');
-          res.body[8].property.should.be.equal('instance.lnd.externalIP');
-          const externalIP = res.body[8];
+          res.body[10].should.have.property('property');
+          res.body[10].property.should.be.equal('instance.lnd.externalIP');
+          const externalIP = res.body[10];
           externalIP.should.have.property('message');
           externalIP.message.should.equal('is not of a type(s) string');
           externalIP.should.have.property('schema');
@@ -341,9 +384,9 @@ describe('v1/settings endpoints', () => {
           externalIP.should.have.property('stack');
           externalIP.stack.should.equal('instance.lnd.externalIP is not of a type(s) string');
 
-          res.body[9].should.have.property('property');
-          res.body[9].property.should.be.equal('instance.system.systemDisplayUnits');
-          const systemDisplayUnits = res.body[9];
+          res.body[11].should.have.property('property');
+          res.body[11].property.should.be.equal('instance.system.systemDisplayUnits');
+          const systemDisplayUnits = res.body[11];
           systemDisplayUnits.should.have.property('message');
           systemDisplayUnits.message.should.equal('is not one of enum values: btc,sats');
           systemDisplayUnits.should.have.property('schema');

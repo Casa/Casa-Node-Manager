@@ -3,6 +3,8 @@
     "bitcoindListen":"true",
     "bitcoindPort":"8333",
     "nickName":5,
+    "color":"short",
+    "minChanSize":0,
     "autopilot":"false",
     "maxChannels":"ten",
     "maxChanSize":"one-hundred",
