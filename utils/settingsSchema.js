@@ -46,6 +46,15 @@ const lndSchema = {
       type: 'string',
       maxLength: 32,
     },
+    color: {
+      type: 'string',
+      minLength: 7,
+      maxLength: 7,
+    },
+    minChanSize: {
+      type: 'integer',
+      minimum: 20000, // minimum size lnd will open
+    },
     autopilot: {type: 'boolean'},
     maxChannels: {
       type: 'integer',
@@ -53,7 +62,7 @@ const lndSchema = {
     },
     maxChanSize: {
       type: 'integer',
-      maximum: 16777216,
+      maximum: 16777216, // maximum size lnd will open
     },
     externalIP: {
       type: 'string'
@@ -139,6 +148,15 @@ const sparseLndSchema = {
     lndNodeAlias: {
       type: 'string',
       maxLength: 32,
+    },
+    color: {
+      type: 'string',
+      minLength: 7,
+      maxLength: 7,
+    },
+    minChanSize: {
+      type: 'integer',
+      minimum: 20000, // minimum size lnd will open
     },
     autopilot: {type: 'boolean'},
     maxChannels: {

@@ -24,6 +24,8 @@ router.post('/save', auth.jwt, safeHandler((req, res, next) => {
     lnd: {
       lndNodeAlias: req.body.nickName,
       lndNetwork: req.body.network,
+      color: req.body.color,
+      minChanSize: req.body.minChanSize,
       autopilot: req.body.autopilot,
       maxChannels: req.body.maxChannels,
       maxChanSize: req.body.maxChanSize,

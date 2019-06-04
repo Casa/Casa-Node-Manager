@@ -406,6 +406,7 @@ async function setHiddenServiceEnv() {
 }
 
 // Run startup functions
+/* eslint-disable no-magic-numbers */
 async function startup() {
 
   let errorThrown = false;
@@ -500,6 +501,7 @@ async function startup() {
 
   bootPercent = 100;
 }
+/* eslint-enable no-magic-numbers */
 
 // Starts the interval service Lan IP Management.
 async function startLanIPIntervalService() {

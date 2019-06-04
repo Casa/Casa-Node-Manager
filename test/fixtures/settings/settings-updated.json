@@ -3,6 +3,8 @@
     "bitcoindListen":true,
     "bitcoindPort":8335,
     "nickName":"updated-unit-test-node",
+    "color":"#FFFFFF",
+    "minChanSize":100000,
     "autopilot":false,
     "maxChannels":10,
     "maxChanSize":100,
