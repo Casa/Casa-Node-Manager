@@ -30,20 +30,7 @@ async function getBitcoindAddresses(jwt) {
     .get(lnapiUrl + ':' + lnapiPort + '/v1/bitcoind/info/addresses', headers);
 }
 
-// Perform backup only when LND is not processing.
-async function backUpLndData(jwt) {
-  const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt
-    }
-  };
-
-  return axios
-    .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/util/backup', {}, headers);
-}
-
 module.exports = {
   unlockLnd,
-  getBitcoindAddresses,
-  backUpLndData,
+  getBitcoindAddresses
 };
