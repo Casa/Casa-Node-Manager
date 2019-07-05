@@ -43,61 +43,35 @@ function getImages() {
   return dockerService.getImages();
 }
 
-function getStatuses() {
-  // TODO: check if something is missing
-  var deferred = q.defer();
+async function getStatuses() {
 
   var data = {};
 
-  function parseDiskUsage(df) {
-    data['node'] = {
-      volumes: df['Volumes'].length,
-      containers: df['Containers'].length,
-      images: df['Images'].length,
-      time: Math.floor(new Date().getTime() / 1000) // eslint-disable-line no-magic-numbers
-    };
-  }
+  const containers = await getAllContainers();
 
-  function parseContainerInformation(containers) {
-    var statuses = [];
-    containers.forEach(function(container) {
-      // TODO: Filter out problematic welcome service, need to fix properly by shutting it down.
-      if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.WELCOME) {
-        return;
-      }
-      if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.DEVICE_HOST) {
-        return;
-      }
-      statuses.push({
-        id: container['Id'],
-        service: container['Labels']['com.docker.compose.service'],
-        image: container['Image'],
-        image_id: container['ImageID'], // eslint-disable-line camelcase
-        status: container['State'],
-        created: container['Created'],
-        message: container['Status'],
-      });
+  var statuses = [];
+  containers.forEach(function(container) {
+    // TODO: Filter out problematic welcome service, need to fix properly by shutting it down.
+    if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.WELCOME) {
+      return;
+    }
+    if (container['Labels']['com.docker.compose.service'] === constants.SERVICES.DEVICE_HOST) {
+      return;
+    }
+    statuses.push({
+      id: container['Id'],
+      service: container['Labels']['com.docker.compose.service'],
+      image: container['Image'],
+      image_id: container['ImageID'], // eslint-disable-line camelcase
+      status: container['State'],
+      created: container['Created'],
+      message: container['Status'],
     });
+  });
 
-    data['containers'] = statuses;
-  }
+  data['containers'] = statuses;
 
-  function handleSuccess() {
-    deferred.resolve(data);
-  }
-
-  function handleError() {
-    deferred.reject(new DockerError('Unable to determine statuses'));
-  }
-
-  getAllContainers()
-    .then(parseContainerInformation)
-    .then(dockerService.getDiskUsage)
-    .then(parseDiskUsage)
-    .then(handleSuccess)
-    .catch(handleError);
-
-  return deferred.promise;
+  return data;
 }
 
 // We need to parse image name from the docker image on the device. Generally, there is only one

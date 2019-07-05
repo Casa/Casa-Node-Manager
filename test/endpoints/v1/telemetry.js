@@ -297,14 +297,6 @@ describe('v1/telemetry endpoints', () => {
           res.body.containers[7].should.have.property('status');
           res.body.containers[7].status.should.equal('running');
 
-          res.body.should.have.property('node');
-          res.body.node.should.have.property('volumes');
-          res.body.node.volumes.should.equal(9);
-          res.body.node.should.have.property('containers');
-          res.body.node.containers.should.equal(8);
-          res.body.node.should.have.property('images');
-          res.body.node.images.should.equal(25);
-          res.body.node.should.have.property('time');
           done();
         });
     });
