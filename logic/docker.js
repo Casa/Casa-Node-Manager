@@ -168,7 +168,8 @@ async function getVersions() {
     }
 
     // TODO: Filter out problematic welcome service, need to fix properly by shutting it down.
-    if (service === constants.SERVICES.WELCOME) {
+    if (service === constants.SERVICES.WELCOME
+      || service === constants.SERVICES.DEVICE_HOST) {
       continue;
     }
 
