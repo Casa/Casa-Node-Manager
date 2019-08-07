@@ -178,8 +178,6 @@ describe('v1/settings endpoints', () => {
           res.should.be.json;
           res.body.should.be.an('array');
 
-          console.log(res.body)
-
           res.body[0].should.have.property('property');
           res.body[0].property.should.be.equal('instance.bitcoind.bitcoinNetwork');
           const bitcoinNetwork = res.body[0];
@@ -396,6 +394,45 @@ describe('v1/settings endpoints', () => {
           systemDisplayUnits.should.have.property('name');
           systemDisplayUnits.name.should.equal('enum');
           systemDisplayUnits.stack.should.equal('instance.system.systemDisplayUnits is not one of enum values: btc,sats');
+
+          done();
+        });
+    });
+
+    it('should not save invalid settings and should return the appropriate validation errors', done => {
+      requester
+        .post('/v1/settings/save')
+        .set('authorization', `JWT ${token}`)
+        .send(require(`${__dirname}/../../fixtures/settings/settings-invalid-alias.json`))
+        .end((err, res) => {
+          if (err) {
+            done(err);
+          }
+
+          res.should.have.status(500);
+
+          res.should.be.json;
+          res.body.should.be.an('array');
+
+          res.body[0].should.have.property('property');
+          res.body[0].property.should.be.equal('instance.lnd.lndNodeAlias');
+          const lndNodeAlias = res.body[0];
+          lndNodeAlias.should.have.property('message');
+          lndNodeAlias.message.should.equal('does not meet maximum length of 32');
+          lndNodeAlias.should.have.property('schema');
+          lndNodeAlias.schema.should.have.property('type');
+          lndNodeAlias.schema.type.should.equal('string');
+          lndNodeAlias.schema.should.have.property('maxLength');
+          lndNodeAlias.schema.maxLength.should.equal(32);
+          lndNodeAlias.should.have.property('instance');
+          lndNodeAlias.instance.should.equal("123456789012345678901234567890123");
+          lndNodeAlias.should.have.property('name');
+          lndNodeAlias.name.should.equal('maxLength');
+          lndNodeAlias.should.have.property('argument');
+          lndNodeAlias.argument.should.be.an('number');
+          lndNodeAlias.argument.should.equal(32);
+          lndNodeAlias.should.have.property('stack');
+          lndNodeAlias.stack.should.equal('instance.lnd.lndNodeAlias does not meet maximum length of 32');
 
           done();
         });
