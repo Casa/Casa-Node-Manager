@@ -4,6 +4,8 @@ const UPDATABLE_SERVICES = [constants.SERVICES.LND, constants.SERVICES.BITCOIND,
   constants.SERVICES.SPACE_FLEET, constants.SERVICES.SYSLOG, constants.SERVICES.PAPERTRAIL,
   constants.SERVICES.LOGSPOUT];
 
+const MAX_ALIAS_LENGTH = 32;
+
 function isUpdatableService(service) {
   if (!UPDATABLE_SERVICES.includes(service)) {
     throw new ValidationError('Unknown service or not updatable');
@@ -16,7 +18,14 @@ function isBoolean(key, value) {
   }
 }
 
+function isValidAliasLength(object) {
+  if (Buffer.byteLength(String(object), 'utf8') > MAX_ALIAS_LENGTH) {
+    throw new ValidationError('Must be less than 32 bytes.');
+  }
+}
+
 module.exports = {
   isUpdatableService,
-  isBoolean
+  isBoolean,
+  isValidAliasLength,
 };

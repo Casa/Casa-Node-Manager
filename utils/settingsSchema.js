@@ -1,4 +1,23 @@
 const Validator = require('jsonschema').Validator;
+const utilValidator = require('utils/validator.js');
+
+const ALIAS_TOO_LONG_ERROR = {
+  valid: false,
+  errors: [
+    {
+      property: 'instance.lnd.lndNodeAlias',
+      message: 'does not meet maximum length of 32',
+      schema: {
+        type: 'string',
+        maxLength: 32
+      },
+      instance: '1234567890123456789012345678901212',
+      name: 'maxLength',
+      argument: 32,
+      stack: 'instance.lnd.lndNodeAlias does not meet maximum length of 32',
+    }
+  ]
+};
 
 const settingsSchema = {
   type: 'object',
@@ -188,6 +207,20 @@ const sparseSystemSchema = {
 };
 
 function validateSettingsSchema(data) {
+
+  // json schema cannot handle special characters like emojis. Here we handle length errors.
+  if (data.lnd.lndNodeAlias) {
+    try {
+      utilValidator.isValidAliasLength(data.lnd.lndNodeAlias);
+    } catch (error) {
+      const response = ALIAS_TOO_LONG_ERROR;
+      response.errors[0].instance = data.lnd.lndNodeAlias;
+
+      return response;
+    }
+  }
+
+  // handle all other errors
   var validator = new Validator();
   validator.addSchema(availableNetworks);
   validator.addSchema(lndSchema);
@@ -199,6 +232,20 @@ function validateSettingsSchema(data) {
 }
 
 function validateSparseSettingsSchema(data) { // eslint-disable-line id-length
+
+  // json schema cannot handle special characters like emojis. Here we handle length errors.
+  if (data.lnd.lndNodeAlias) {
+    try {
+      utilValidator.isValidAliasLength(data.lnd.lndNodeAlias);
+    } catch (error) {
+      const response = ALIAS_TOO_LONG_ERROR;
+      response.errors[0].instance = data.lnd.lndNodeAlias;
+
+      return response;
+    }
+  }
+
+  // handle all other errors
   var validator = new Validator();
   validator.addSchema(availableNetworks);
   validator.addSchema(sparseLndSchema);

@@ -1,10 +1,14 @@
 # specify the node base image with your desired version node:<version>
-FROM node:8
+FROM node:8-slim
 
 # install tools
-RUN apt-get update \
-  && apt-get install -y vim \
-  && apt-get install rsync -y
+RUN apt-get update --no-install-recommends \
+  && apt-get install -y --no-install-recommends vim \
+  && apt-get install -y --no-install-recommends python \
+  && apt-get install -y --no-install-recommends build-essential g++ \
+  && apt-get install -y libltdl7 \
+  && apt-get install -y --no-install-recommends rsync \
+  && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
 WORKDIR /usr/src/app
