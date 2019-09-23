@@ -33,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(requestCorrelationMiddleware);
-app.use(morgan(logger.morganConfiguration));
+app.use(morgan('default', logger.morganConfiguration));
 app.use('/ping', ping);
 app.use('/v1/accounts', accounts);
 app.use('/v1/device', device);

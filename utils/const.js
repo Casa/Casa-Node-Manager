@@ -11,7 +11,8 @@ module.exports = {
     LOGSPOUT: 'logspout.yml',
     MANAGER: 'manager.yml',
     TOR: 'tor.yml',
-    WELCOME: 'welcome.yml'
+    WELCOME: 'welcome.yml',
+    UPDATE_MANAGER: 'update-manager.yml',
   },
   WORKING_DIRECTORY: '/usr/local/casa/applications',
   LOGGING_DOCKER_COMPOSE_FILE: 'logspout.yml',
@@ -35,6 +36,14 @@ module.exports = {
     TOR: 'tor',
     UPDATE_MANAGER: 'update-manager',
     WELCOME: 'welcome'
+  },
+  STATUS_CODES: {
+    ACCEPTED: 202,
+    BAD_GATEWAY: 502,
+    CONFLICT: 409,
+    FORBIDDEN: 403,
+    OK: 200,
+    UNAUTHORIZED: 401,
   },
   TAG: process.env.TAG || 'arm',
   TIME: {
