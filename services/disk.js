@@ -7,6 +7,17 @@ const fs = require('fs');
 const crypto = require('crypto');
 const uint32Bytes = 4;
 
+// Deletes a file from the filesystem
+function deleteFile(filePath) {
+  return new Promise((resolve, reject) => fs.unlink(filePath, (err, str) => {
+    if (err) {
+      reject(err);
+    } else {
+      resolve(str);
+    }
+  }));
+}
+
 // Reads a file. Wraps fs.readFile into a native promise
 function readFile(filePath, encoding) {
   return new Promise((resolve, reject) => fs.readFile(filePath, encoding, (err, str) => {
@@ -82,6 +93,7 @@ function writeKeyFile(filePath, obj) {
 }
 
 module.exports = {
+  deleteFile,
   readFile,
   readUtf8File,
   readJsonFile,

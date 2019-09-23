@@ -51,7 +51,7 @@ router.post('/user-reset', auth.accountJWTProtected, safeHandler((req, res) => {
 }));
 
 // Use auth.basic for consistency with update manager
-router.post('/shutdown', auth.basic, safeHandler((req, res) => { // eslint-disable-line arrow-body-style
+router.post('/shutdown', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler((req, res) => { // eslint-disable-line arrow-body-style
   return applicationLogic.shutdown()
     .then(() => {
       res.json({status: 'shutdown'});

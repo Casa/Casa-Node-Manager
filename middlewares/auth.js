@@ -5,19 +5,18 @@ const bcrypt = require('bcrypt');
 const diskLogic = require('logic/disk.js');
 const authLogic = require('logic/auth.js');
 const NodeError = require('models/errors.js').NodeError;
+const UUID = require('utils/UUID.js');
 const rsa = require('node-rsa');
-const UUID = require('utils/UUID');
 
-var JwtStrategy = passportJWT.Strategy;
-var BasicStrategy = passportHTTP.BasicStrategy;
-var ExtractJwt = passportJWT.ExtractJwt;
+const JwtStrategy = passportJWT.Strategy;
+const BasicStrategy = passportHTTP.BasicStrategy;
+const ExtractJwt = passportJWT.ExtractJwt;
 
-const saltRounds = 10;
-
-const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 const JWT_AUTH = 'jwt';
 const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
+
+const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
 async function generateJWTKeys() {
   const key = new rsa({b: 512}); // eslint-disable-line id-length
@@ -57,10 +56,19 @@ createJwtOptions().then(function(data) {
 });
 
 passport.use(REGISTRATION_AUTH, new BasicStrategy(function(username, password, next) {
-  bcrypt.hash(password, saltRounds).then(function(hash) {
-    return next(null, {password: hash, username: SYSTEM_USER});
-  });
+  const credentials = authLogic.hashCredentials(SYSTEM_USER, password);
+
+  return next(null, credentials);
 }));
+
+// Override the authorization header with password that is in the body of the request if basic auth was not supplied.
+function convertReqBodyToBasicAuth(req, res, next) {
+  if (req.body.password && !req.headers.authorization) {
+    req.headers.authorization = 'Basic ' + Buffer.from(SYSTEM_USER + ':' + req.body.password).toString('base64');
+  }
+
+  next();
+}
 
 function basic(req, res, next) {
   passport.authenticate(BASIC_AUTH, {session: false}, function(error, user) {
@@ -146,6 +154,7 @@ function register(req, res, next) {
 
 module.exports = {
   basic,
+  convertReqBodyToBasicAuth,
   jwt,
   register,
   accountJWTProtected,

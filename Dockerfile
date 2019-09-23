@@ -18,6 +18,7 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+RUN npm --build-from-source install bcrypt@3.0.6
 RUN npm install
 # If you are building your code for production
 # RUN npm install --only=production
