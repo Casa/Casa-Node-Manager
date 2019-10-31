@@ -10,6 +10,7 @@ const cors = require('cors');
 // Keep requestCorrelationId middleware as the first middleware. Otherwise we risk losing logs.
 const requestCorrelationMiddleware = require('middlewares/requestCorrelationId.js'); // eslint-disable-line id-length
 const errorHandleMiddleware = require('middlewares/errorHandling.js');
+const onionOriginMiddleware = require('middlewares/onionOrigin.js');
 const corsOptions = require('middlewares/cors.js').corsOptions;
 require('middlewares/auth.js');
 
@@ -24,6 +25,10 @@ const telemetry = require('routes/v1/telemetry.js');
 const ping = require('routes/ping.js');
 const app = express();
 
+// Handle Cors for Tor Browser 9.0.0 bug and options requests
+app.use(onionOriginMiddleware);
+
+// Handles Cors for normal requests
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
