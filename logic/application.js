@@ -60,7 +60,7 @@ function resetSystemStatus() {
 }
 
 async function downloadChain() {
-  await dockerComposeLogic.dockerLoginCasaworker();
+  await dockerComposeLogic.dockerLoginCasabuilder();
 
   await dockerComposeLogic.dockerComposePull({service: constants.SERVICES.DOWNLOAD});
   systemStatus.details = 'downloading blocks...';
@@ -368,7 +368,7 @@ async function startTorAsNeeded(settings) {
 
     // Pull Tor image if needed
     if (!await dockerLogic.hasImageForService(constants.SERVICES.TOR)) {
-      await dockerComposeLogic.dockerLoginCasaworker();
+      await dockerComposeLogic.dockerLoginCasabuilder();
       await dockerComposeLogic.dockerComposePull({service: constants.SERVICES.TOR});
     }
 
@@ -427,7 +427,7 @@ async function startup() {
       bootPercent = 10;
 
       if (!firstBoot.registered) {
-        await dockerComposeLogic.dockerLoginCasaworker();
+        await dockerComposeLogic.dockerLoginCasabuilder();
         await dockerComposeLogic.dockerComposePull({service: constants.SERVICES.WELCOME});
 
         try {

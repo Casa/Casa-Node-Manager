@@ -21,7 +21,6 @@ services:
     environment:
       - DEVICE_HOST
       - CASABUILDER_PASSWORD
-      - CASAWORKER_PASSWORD
       - DISABLE_YML_UPDATE
       - SYSTEM_USER
       - TAG
