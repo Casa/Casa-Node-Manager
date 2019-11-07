@@ -125,20 +125,15 @@ function dockerComposePull(options = {}) {
 // get /update route to recreate specified containers. However, device-host is recreated every time the manager starts
 // up. Notably, update-manager is left out, because there is currently no mechanism build to recreate that container.
 async function dockerComposePullAll() {
-  const casabuilderImagesToPull = [constants.SERVICES.MANAGER, constants.SERVICES.UPDATE_MANAGER];
-  const casaworkerImagesToPull = [constants.SERVICES.DEVICE_HOST, constants.SERVICES.LND, constants.SERVICES.BITCOIND,
+  const casabuilderImagesToPull = [constants.SERVICES.DEVICE_HOST, constants.SERVICES.LND, constants.SERVICES.BITCOIND,
     constants.SERVICES.LNAPI, constants.SERVICES.SPACE_FLEET, constants.SERVICES.SYSLOG, constants.SERVICES.TOR,
-    constants.SERVICES.LOGSPOUT, constants.SERVICES.WELCOME];
+    constants.SERVICES.LOGSPOUT, constants.SERVICES.WELCOME, constants.SERVICES.MANAGER,
+    constants.SERVICES.UPDATE_MANAGER];
 
   // Pull images synchronously. Async pull will take too much processing power. We don't want these pulls to overload
   // the raspberry pi.
   await dockerLoginCasabuilder();
   for (const image of casabuilderImagesToPull) {
-    await dockerComposePull({service: image});
-  }
-
-  await dockerLoginCasaworker();
-  for (const image of casaworkerImagesToPull) {
     await dockerComposePull({service: image});
   }
 
@@ -289,14 +284,6 @@ async function dockerLoginCasabuilder() {
 
 }
 
-async function dockerLoginCasaworker() {
-
-  if (process.env.CASAWORKER_PASSWORD) {
-    await dockerLogin({}, 'casaworker', process.env.CASAWORKER_PASSWORD);
-  }
-
-}
-
 async function dockerLogout(options = {}) {
 
   addDefaultOptions(options);
@@ -318,6 +305,6 @@ module.exports = {
   dockerComposeRemove,
   dockerComposeRestart,
   dockerComposeUpSingleService, // eslint-disable-line id-length
-  dockerLoginCasaworker,
+  dockerLoginCasabuilder,
   pullUpdateManager,
 };
